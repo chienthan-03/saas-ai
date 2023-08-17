@@ -11,19 +11,20 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { UserAvatar } from "@/components/user-avatar";
 import { BotAvatar } from "@/components/bot-avatar";
+import { LuCode2 } from "react-icons/lu";
 
 import { useState } from "react";
-import { MessageSquare } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChatCompletionRequestMessage } from "openai";
+import { useProModal } from "@/hooks/use-pro-modal";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { formSchema } from "./constants";
 import { cn } from "@/lib/utils";
-import { useProModal } from "@/hooks/use-pro-modal";
 
-function ConversationPage() {
+function CodePage() {
   const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
   const proModal = useProModal();
   const router = useRouter();
@@ -44,7 +45,7 @@ function ConversationPage() {
       };
       const newMessages = [...messages, userMessage];
 
-      const response = await axios.post("/api/conversation", {
+      const response = await axios.post("/api/code", {
         messages: newMessages,
       });
       setMessages((current) => [...current, userMessage, response.data]);
@@ -64,11 +65,11 @@ function ConversationPage() {
   return (
     <div>
       <Heading
-        title="Conversation"
+        title="Code Generation"
         description="Our most advanced conversation model."
-        icon={MessageSquare}
-        iconColor="text-violet-500"
-        bgColor="bg-violet-500/10"
+        icon={LuCode2}
+        iconColor="text-green-700"
+        bgColor="bg-green-700/10"
       />
       <div className="px-4 lg:px-8">
         <div>
@@ -96,7 +97,7 @@ function ConversationPage() {
                       <Input
                         className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent"
                         disabled={isLoading}
-                        placeholder="How do I calculate the radius of a circle?"
+                        placeholder="Simple toggle button using react hooks."
                         {...field}
                       />
                     </FormControl>
@@ -133,7 +134,19 @@ function ConversationPage() {
                 )}
               >
                 {mess.role === "user" ? <UserAvatar /> : <BotAvatar />}
-                <p>{mess.content}</p></div>
+                <ReactMarkdown components={{
+                  pre: ({ node, ...props }) => (
+                    <div className="overflow-auto w-full my-2 bg-black/10 p-2 rounded-lg">
+                      <pre {...props} />
+                    </div>
+                  ),
+                  code: ({ node, ...props }) => (
+                    <code className="bg-black/10 rounded-lg p-1" {...props} />
+                  )
+                }} className="text-sm overflow-hidden leading-7">
+                  {mess.content || ""}
+                </ReactMarkdown>
+              </div>
             ))}
           </div>
         </div>
@@ -142,4 +155,4 @@ function ConversationPage() {
   );
 }
 
-export default ConversationPage;
+export default CodePage;

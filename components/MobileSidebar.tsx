@@ -5,7 +5,13 @@ import { HiMenuAlt3 } from "react-icons/hi";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import SideBar from "./SideBar";
 
-function MobileSidebar() {
+function MobileSidebar({
+  apiLimitCount = 0,
+  isPro = false
+}: {
+  apiLimitCount: number;
+  isPro: boolean;
+}) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -24,7 +30,7 @@ function MobileSidebar() {
             </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-0">
-            <SideBar />
+            <SideBar isPro={isPro} apiLimitCount={apiLimitCount} />
         </SheetContent>
     </Sheet>
   )
